@@ -35,7 +35,19 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
         }
       },
       tooltip: {
-        enabled: false
+        //will disable tooltip
+        //enabled: false
+        animation: false,
+        backgroundColor: 'rgba(0,0,0,1)',
+        hideDelay: 5000,
+        style: {
+          color: 'blue'
+        },
+        shared: false,
+        useHtml: true,
+        pointFormat: '<b>{point.y}</b>',
+        headerFormat: 'Test Text'
+        
       }
     });
 
