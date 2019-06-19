@@ -27,29 +27,56 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
     // Get chart options from the default LineChartOptionsBuilder
     let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
 
+    chartOptions.series.forEach(serie => {
+      const data = serie.data;
+      if (data) {
+        data.forEach(point => {
+          const { yRawData } = point;
+          if (yRawData === null) {
+           const { y } = point;
+            Object.assign(point,{
+              y: null
+            });
+          } 
+        });
+      }
+    });
+
+    //const insightValue = dataParser.dataStructure['insightValues'][0];
+    //console.log('insightValue');
+
     // Extend the chart options with 3D options
     $.extend(true, chartOptions, {
       plotOptions: {
         series: {
-          step: 'left' // or 'center' or 'right'
+          connectNulls: false
         }
       },
       tooltip: {
-        //will disable tooltip
-        //enabled: false
-        animation: false,
-        backgroundColor: 'rgba(0,0,0,1)',
-        hideDelay: 5000,
-        style: {
-          color: 'blue'
-        },
+        //will disable tooltip <Default: true>
+        //enabled: true,
+
+        // Animation <Default: true>
+        // animation: true,
+
+        // Oridinal Settings
+        //xAxis: {
+        //  ordinal: true
+        //},
+
+        
+
+
+        //Determines if separate lines use the same tooltip. 
         shared: false,
         useHtml: true,
-        pointFormat: '<b>{point.y}</b>',
-        headerFormat: 'Test Text'
-        
+        //formatter: function () {
+        // return 'Test value - x: <b>' + this.x + '</b> y: <b>' + this.y + '</b>';
+        //}
       }
     });
+
+    
 
     return chartOptions;
   }

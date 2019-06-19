@@ -7,7 +7,8 @@ import {
     REPORT_PART_TYPES,
     CHART_STYLES,
     extendReportPartStyleConfiguration,
-    createCheckBoxPropertySchema
+    createCheckBoxPropertySchema,
+    createFieldContainerSchema
 } from 'IzendaSynergy';
 
 /*
@@ -67,5 +68,10 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
     *   Map the 3d options value into userOptions which is passed into option builder
     */
     optionsMapping: { optionsByType: { 'tooltip': { propKey: 'tooltip.enabled', defaultValue: true } } }
+
+    /*
+    * Declare tooltip insight field container
+    */
+    // fieldContainerSchema: [createFieldContainerSchema('InsightField', 'Insight Field', 'insightValues', null, 1)]
 
 }); 
