@@ -27,8 +27,8 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
 
     /*
     *   Extend the Report Designer of chart properties panel with enable tooltip checkbox under chart setting group.
+    *   Extend the Report Designer of chart properties panel with enable Break on Null option
     */
-
     propertySchema: {
         groups: {
             chart: {
@@ -38,6 +38,12 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
                         title: 'Enable Tooltip',
                         value: 'getValueByKey',
                         props: { title: 'Enable Tooltip' }
+                    },
+                    'connectNulls': {
+                        factory: createCheckBoxPropertySchema,
+                        title: 'Connect Nulls',
+                        value: 'getValueByKey',
+                        props: { title: 'Connect Nulls' }
                     }
                 }
             }
@@ -57,6 +63,8 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
     ) => {
         const tooltipOptions = schemaData.chart['tooltip'];
         chartProperties.optionByType['tooltip'] = tooltipOptions ? tooltipOptions.value : false;
+        const connectNullOptions = schemaData.chart['connectNulls'];
+        chartProperties.optionByType['connectNulls'] = connectNullOptions ? connectNullOptions.value : false;
     },
 
     /**
@@ -67,8 +75,16 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
     /*
     *   Map the 3d options value into userOptions which is passed into option builder
     */
-    optionsMapping: { optionsByType: { 'tooltip': { propKey: 'tooltip.enabled', defaultValue: true } } }
-
+    optionsMapping: {
+        optionsByType: {
+            'tooltip': {
+                propKey: 'tooltip.enabled', defaultValue: true
+            },
+            'connectNulls': {
+                propKey: 'plotOptions.series.newConnectNulls', defaultValue: false
+            }
+        }
+    }
     /*
     * Declare tooltip insight field container
     */

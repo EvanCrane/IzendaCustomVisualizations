@@ -27,20 +27,27 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
     // Get chart options from the default LineChartOptionsBuilder
     let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
 
+    // Iterating through each data object in the series
+    // This will overwrite Izenda's default behavior of setting null values for the Y axis to plot their points as 0. 
+    // The overwrite will check for each yRawData value in the data object for nulls and will change the Y point value to null.
+    // This is so the chart will not show the null point
     chartOptions.series.forEach(serie => {
       const data = serie.data;
       if (data) {
         data.forEach(point => {
           const { yRawData } = point;
           if (yRawData === null) {
-           const { y } = point;
-            Object.assign(point,{
+            const { y } = point;
+            Object.assign(point, {
               y: null
             });
-          } 
+          }
         });
       }
     });
+
+
+    const enableConnectNulls = userOptions.plotOptions && userOptions.plotOptions.series && userOptions.plotOptions.series.newConnectNulls;
 
     //const insightValue = dataParser.dataStructure['insightValues'][0];
     //console.log('insightValue');
@@ -48,25 +55,12 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
     // Extend the chart options with 3D options
     $.extend(true, chartOptions, {
       plotOptions: {
-        series: {
-          connectNulls: false
-        }
-      },
+       series: {
+          // Will connect gaps in data <Default: false>
+          connectNulls: enableConnectNulls !== undefined ? enableConnectNulls : false,
+       }
+     },
       tooltip: {
-        //will disable tooltip <Default: true>
-        //enabled: true,
-
-        // Animation <Default: true>
-        // animation: true,
-
-        // Oridinal Settings
-        //xAxis: {
-        //  ordinal: true
-        //},
-
-        
-
-
         //Determines if separate lines use the same tooltip. 
         shared: false,
         useHtml: true,
@@ -76,7 +70,7 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
       }
     });
 
-    
+
 
     return chartOptions;
   }
