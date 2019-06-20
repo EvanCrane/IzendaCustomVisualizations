@@ -60,18 +60,7 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
           connectNulls: enableConnectNulls !== undefined ? enableConnectNulls : false,
        }
      },
-      tooltip: {
-        //Determines if separate lines use the same tooltip. 
-        shared: false,
-        useHtml: true,
-        //formatter: function () {
-        // return 'Test value - x: <b>' + this.x + '</b> y: <b>' + this.y + '</b>';
-        //}
-      }
     });
-
-
-
     return chartOptions;
   }
 }

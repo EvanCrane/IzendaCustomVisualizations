@@ -8,7 +8,6 @@ import {
     CHART_STYLES,
     extendReportPartStyleConfiguration,
     createCheckBoxPropertySchema,
-    createFieldContainerSchema
 } from 'IzendaSynergy';
 
 /*
@@ -85,9 +84,4 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'UnleashedLine', CHA
             }
         }
     }
-    /*
-    * Declare tooltip insight field container
-    */
-    // fieldContainerSchema: [createFieldContainerSchema('InsightField', 'Insight Field', 'insightValues', null, 1)]
-
 }); 
