@@ -58,6 +58,11 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
        series: {
           // Will connect gaps in data <Default: false>
           connectNulls: enableConnectNulls !== undefined ? enableConnectNulls : false,
+       },
+       linearregression: {
+         label: {
+           enabled: false
+         }
        }
      },
     });
