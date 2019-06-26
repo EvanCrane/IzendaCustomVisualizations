@@ -37,6 +37,8 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
         data.forEach(point => {
           const { yRawData } = point;
           if (yRawData === null) {
+            console.log(data);
+            console.log(point);
             const { y } = point;
             Object.assign(point, {
               y: null

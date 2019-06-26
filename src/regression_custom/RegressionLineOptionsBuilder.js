@@ -26,22 +26,17 @@ export default class RegressionLineOptionsBuilder extends LineChartOptionsBuilde
 
     // Get chart options from the default LineChartOptionsBuilder
     let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
-    //const insightValue = dataParser.dataStructure['insightValues'][0];
-    //console.log('insightValue');
+
+    // getTrendInfo(chartOptions);
+
+    chartOptions.series.forEach(serie => {
+      const data = serie.data;
+      console.log(serie);
+      });
 
     // Extend the chart options with 3D options
     $.extend(true, chartOptions, {
-      plotOptions: {
-
-        events: {
-          load: getTrendInfo()
-        },
-        linearregression: {
-          label: {
-            // enabled: false
-          }
-        }
-      },
+  
     });
 
     return chartOptions;
@@ -49,12 +44,13 @@ export default class RegressionLineOptionsBuilder extends LineChartOptionsBuilde
 
 
 }
-
-function getTrendInfo() {
-  let trendlines = this.series.filter(c => c.options.isRegressionLine);
+/*
+function getTrendInfo(chartOptions) {
+  let trendlines = chartOptions.series.filter(c => c.options.isRegressionLine);
   for (i in trendlines) {
     trendlines[i].update({
       enableMouseTracking: false
     });
   }
 }
+*/
