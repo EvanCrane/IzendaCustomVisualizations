@@ -28,8 +28,5 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'RegressionLine', CH
      */
     optionsBuilder: RegressionLineOptionsBuilder,
 
-    /*
-    *   Map the 3d options value into userOptions which is passed into option builder
-    */
     
 }); 
