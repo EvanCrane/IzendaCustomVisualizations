@@ -1,14 +1,11 @@
 /* unleashed_line/UnleashedLineOptionsBuilder.js
 * File used to add options to the chart builder
 */
-
 import $ from 'jquery';
 import { getClass } from 'IzendaSynergy';
-
 const LineChartOptionsBuilder = getClass('LineChartOptionsBuilder');
-
 /**
- * The chart options builder to extend the current chart setting with Highchart 3D options
+ * The chart options builder to extend the current chart setting with Highcharts line options
  */
 export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder {
   // default constructor
@@ -26,7 +23,12 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
 
     // Get chart options from the default LineChartOptionsBuilder
     let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
-
+    // Define a custom series class name that will appear in the HTML
+    let seriesClassName = 'regression-lines';
+    // Verify that there is a series and that the regression setting is enabled
+    if (chartOptions.series[0].regression && userOptions.plotOptions.series.dataLabels.enabled) {
+      seriesClassName = 'regression-lines-enabled';
+    }
     // Iterating through each data object in the series
     // This will overwrite Izenda's default behavior of setting null values for the Y axis to plot their points as 0. 
     // The overwrite will check for each yRawData value in the data object for nulls and will change the Y point value to null.
@@ -37,8 +39,6 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
         data.forEach(point => {
           const { yRawData } = point;
           if (yRawData === null) {
-            console.log(data);
-            console.log(point);
             const { y } = point;
             Object.assign(point, {
               y: null
@@ -47,26 +47,33 @@ export default class UnleashedLineOptionsBuilder extends LineChartOptionsBuilder
         });
       }
     });
-
-
+    // Determine if the connect nulls value has been set from the UI and is not undefined
     const enableConnectNulls = userOptions.plotOptions && userOptions.plotOptions.series && userOptions.plotOptions.series.newConnectNulls;
-
-    //const insightValue = dataParser.dataStructure['insightValues'][0];
-    //console.log('insightValue');
-
     // Extend the chart options with 3D options
     $.extend(true, chartOptions, {
+      chart: {
+        events: {
+          // Define a Highcharts event handler that will fire on chart loading
+          // This event handler will change the regression line labels to display:none to hide them
+          load: function () {
+            if (seriesClassName === 'regression-lines-enabled') {
+              // The regression line settings modal creates a second chart that will also need its dataLabels removed
+              // The regression line labels are always the last sibling in the dom tree that have the 'regression-lines' className
+              $('svg.highcharts-root').each(function() {
+                $(this).children('g.regression-lines-enabled').last().css('display','none');
+              });
+            }
+          }
+        }
+      },
       plotOptions: {
-       series: {
+        series: {
+          // Use the defined custom className that Highcharts will include in its generated HTML
+          className: seriesClassName,
           // Will connect gaps in data <Default: false>
           connectNulls: enableConnectNulls !== undefined ? enableConnectNulls : false,
-       },
-       linearregression: {
-         label: {
-           enabled: false
-         }
-       }
-     },
+        }
+      }
     });
     return chartOptions;
   }
