@@ -5,3 +5,6 @@ import './3d_scatter';
 import './columnnospace';
 import './d3_timeline';
 import './d3_googlemap';
+
+//Custom Chart
+import './stacked_chart';
