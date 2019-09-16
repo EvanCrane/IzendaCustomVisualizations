@@ -7,18 +7,16 @@ export default class StackedChartOptionsBuilder extends CombinationChartOptionsB
     constructor(...args) {
         super(...args);
     }
-
     buildOptionsByType(visualType, userOptions, dataParser) {
         // Get chart options from CombinationChartOptionsBuilder
         let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
-
+       
         // Iterate through each series
         chartOptions.series.forEach(serie => {
-            if (serie.type === 'column'){
+            if (serie.type === 'column') {
                 serie.stack = 1;
             }
         });
-
         // Extend HighChart chart options
         $.extend(true, chartOptions, {
             tooltip: {
@@ -31,7 +29,6 @@ export default class StackedChartOptionsBuilder extends CombinationChartOptionsB
                 }
             }
         });
-
         return chartOptions;
     }
 }
