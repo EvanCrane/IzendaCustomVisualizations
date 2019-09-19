@@ -26,15 +26,14 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'StackedColumn', CHA
         chartProperties.optionByType['izSingleYAxis'] = izSingleYAxis.value ? izSingleYAxis.value : true;
     },
     */
+   
     /*
     *   Map the 3d options value into userOptions which is passed into option builder
     */
     // Make sure that SingleYAxis property defaults to true on chart init
-    /*
     optionsMapping: {
         optionsByType: {
-            izSingleYAxis: { defaultValue: false }
+            izSingleYAxis: { defaultValue: true }
         }
     }
-    */
 });
