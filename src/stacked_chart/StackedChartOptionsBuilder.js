@@ -10,11 +10,16 @@ export default class StackedChartOptionsBuilder extends CombinationChartOptionsB
     buildOptionsByType(visualType, userOptions, dataParser) {
         // Get chart options from CombinationChartOptionsBuilder
         let chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
-       
         // Iterate through each series
         chartOptions.series.forEach(serie => {
             if (serie.type === 'column') {
-                serie.stack = 1;
+                serie.stack = 0;
+            }
+            if (serie.isThreshold) {
+                serie.yAxis = 'thresholdY';
+
+            } else {
+                serie.yAxis = 'stackedY';
             }
         });
         // Extend HighChart chart options
@@ -25,9 +30,27 @@ export default class StackedChartOptionsBuilder extends CombinationChartOptionsB
             },
             plotOptions: {
                 column: {
-                    stacking: 'percentage'
+                    stacking: 'percent'
                 }
-            }
+            },
+            yAxis: [{
+                id: 'stackedY',
+                labels: {
+                    formatter: function () {
+                        return this.value + '%';
+                    },
+                },
+                min: 0,
+                max: 100,
+                startOnTick: false,
+                endOnTick: false
+            }, {
+                id: 'thresholdY',
+                stacklabels: {
+                    enabled: false,
+                },
+                opposite: true
+            }]
         });
         return chartOptions;
     }
