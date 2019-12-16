@@ -5,3 +5,4 @@ import './3d_scatter';
 import './columnnospace';
 import './d3_timeline';
 import './d3_googlemap';
+import './allow_overlap';
