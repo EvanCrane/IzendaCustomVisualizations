@@ -1,5 +1,5 @@
 export default {
-		WebApiUrl : 'http://localhost:8001/api/',
+		WebApiUrl : 'http://localhost:3831/api/',
 		BaseUrl : '/',
 		TimeOut : 3600,
 		Integration : false,
