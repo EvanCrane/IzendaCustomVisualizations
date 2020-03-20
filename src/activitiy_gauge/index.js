@@ -1,20 +1,16 @@
-import $ from 'jquery';
 //Import the activity gauge options
-
+import ActivityGaugeOptionsBuilder from './ActivityGaugeOptionsBuilder';
 import {
-    REPORT_PART_TYPE,
-    CHART_TYPE,
-    ReportPartUtils,
-    registerVisualizationEngine,
-    createFieldContainerSchema,
-    extendReportPartStyleConfiguration
+    REPORT_PART_TYPES,
+    CHART_STYLES,
+    extendReportPartStyleConfiguration,
+    createFieldContainerSchema
 } from 'IzendaSynergy';
 
-import ActivityGaugeOptionsBuilder from './ActivityGaugeOptionsBuilder';
-import ActivityGaugeVizEngine from './ActivityGaugeVizEngine';
+// import ActivityGaugeVizEngine from './ActivityGaugeVizEngine';
 
 
-registerVisualizationEngine('ActivityGauge', ActivityGaugeVizEngine);
+//registerVisualizationEngine('ActivityGauge', ActivityGaugeVizEngine);
 
 /**
  * Defined in ui/api/Izenda.ReportPartApi.js
@@ -30,19 +26,18 @@ registerVisualizationEngine('ActivityGauge', ActivityGaugeVizEngine);
  * We will define our activity gauge configuration here
  */
 
-
-extendReportPartStyleConfiguration(REPORT_PART_TYPE.gauge, 'ActivityGauge', null, {
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'ActivityGauge', CHART_STYLES.SolidGauge, {
     /** 
     * The name of visualization engine. 
     * The default visualization engine which is defined in report part configuration is used if it doesn't specify here.
     */
-    visualEngine: 'ActivityGauge',
+    //visualEngine: 'ActivityGauge',
 
     /**
     * Visual type to identify which visualization type to be rendered. 
     * For example, it would be "type" property of Highchart options.
     */
-    visualType: 'activitygauge',
+    visualType: 'izendaSolidGauge',
 
     /**
     * The label text of this report part style showing in the chart type dropdown of report designer.
@@ -60,6 +55,11 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPE.gauge, 'ActivityGauge', null
     // We would need to figure out what field containers we need
     // fieldContainerSchema: TBD,
 
+    //fieldContainerSchema:
+    //[createFieldContainerSchema('labels', 'Total Attainment', 'labels', 50, 1)]
+    //createFieldContainerSchema('values', 'Actual Attainment', 'values', null, 1),
+    //createFieldContainerSchema('separators', 'Separator', 'separators', null, 1)]
+
     /**
     * An array of custom React components to create property editor.
     * It would be useful in case of using a custom React component directly in the propertySchema property, instead of using registerPropertyEditor to register a custom property editor by type.
@@ -71,7 +71,7 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPE.gauge, 'ActivityGauge', null
     * The object contains defined schema of property editor of report part in designer
     * This would also include its functions for mapping properties, source, and change handler. 
     * Useful for custom properties 
-    */  
+    */
     // Would we need to find out what properties need to be created and set in order for it to communicate with the chart builder and engine
     //propertySchema: TBD,
     //propertyMappingProps: TBD,

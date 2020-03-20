@@ -27,5 +27,5 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, '3DScatter', CHART_S
   /**
    * Declare Z-Axis Values field container
    */
-  fieldContainerSchema: [createFieldContainerSchema('ZValues', 'Z-Axis Values', 'ZValues', null, 1)]
+  fieldContainerSchema: [createFieldContainerSchema('test', 'kkdkdkd', 'ZValues', null, 1)]
 });

@@ -6,3 +6,4 @@ import './columnnospace';
 import './d3_timeline';
 import './d3_googlemap';
 import './activitiy_gauge';
+import './attainment_gauge';
