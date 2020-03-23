@@ -1,5 +1,5 @@
 export default {
-		WebApiUrl : 'http://localhost:3831/api/',
+		WebApiUrl : 'http://dev2.eastasia.cloudapp.azure.com:81/api/',
 		BaseUrl : '/',
 		TimeOut : 3600,
 		Integration : false,

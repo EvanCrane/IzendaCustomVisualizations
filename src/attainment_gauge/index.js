@@ -6,16 +6,10 @@ import {
     extendReportPartStyleConfiguration,
     createFieldContainerSchema
 } from 'IzendaSynergy';
-import { getClass, ReportPartUtils } from 'IzendaSynergy';
-const PieChartOptionsBuilder = getClass('PieChartOptionsBuilder');
 
-extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'AttainmentGauge', null, {
-    visualType: 'solidgauge',
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'AttainmentGauge', null, {
+    visualType: 'izendaSolidGauge',
     visualLabel: 'Attainment Gauge',
-    fieldContainerSchema: [
-        createFieldContainerSchema('total', 'Total Attainment', 'total', null, 1),
-        createFieldContainerSchema('actual', 'Actual Attainment', 'actual', null, 1),
-        createFieldContainerSchema('account', 'Account', 'account', null, 1)
-    ],
     optionsBuilder: AttainmentGaugeOptionsBuilder,
+    fieldContainerSchema: [createFieldContainerSchema('values', 'Custom Test', 'values', null, 1)]
 });

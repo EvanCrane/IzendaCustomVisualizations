@@ -26,7 +26,7 @@ import {
  * We will define our activity gauge configuration here
  */
 
-extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'ActivityGauge', CHART_STYLES.SolidGauge, {
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'ActivityGauge', null, {
     /** 
     * The name of visualization engine. 
     * The default visualization engine which is defined in report part configuration is used if it doesn't specify here.
