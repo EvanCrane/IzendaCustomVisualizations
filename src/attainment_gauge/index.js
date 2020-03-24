@@ -8,8 +8,16 @@ import {
 } from 'IzendaSynergy';
 
 extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'AttainmentGauge', null, {
-    visualType: 'izendaSolidGauge',
+    visualType: 'solidGauge',
     visualLabel: 'Attainment Gauge',
     optionsBuilder: AttainmentGaugeOptionsBuilder,
-    fieldContainerSchema: [createFieldContainerSchema('values', 'Custom Test', 'values', null, 1)]
+    fieldContainerSchema: [
+        createFieldContainerSchema('values', 'Total Attainment', 'values', null, 1),
+        
+        createFieldContainerSchema('actualAmount', 'Actual Amount', 'actualAmount', null, 1),
+        createFieldContainerSchema('accountName', 'Account Name', 'accountName', null, 1),
+        createFieldContainerSchema('accountSequence', 'Account Sequence', 'accountSequence', null, 1),
+
+        
+]
 });

@@ -7,3 +7,4 @@ import './d3_timeline';
 import './d3_googlemap';
 // import './activitiy_gauge';
 import './attainment_gauge';
+import './custom_gauge';
