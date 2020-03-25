@@ -13,14 +13,16 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
     }
     buildOptionsByType(visualType, userOptions, dataParser) {
         const records = dataParser['records'];
-        const totalAttainment = dataParser.dataStructure['totalAttainment'][0];
+        const sequence = dataParser.dataStructure['labels'][0];
+        const totalAttainment = dataParser.dataStructure['values'][0];
         const actualAmount = dataParser.dataStructure['actualAmount'][0];
         const accountName = dataParser.dataStructure['accountName'][0];
 
         const seriesConfig = userOptions.izendaSeriesConfig;
+
         //const accountSequence = dataParser.dataStructure['accountSequence'][0];
 
-        let [total, actual, account] = getSeries();
+        let [total, actual, account] = getCustomSeries();
         // Percentange Calculated
         let calculatedAttainment = calculateAttainment();
         let [formattedTotal, formattedActual] = formatSeries();
@@ -76,8 +78,8 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 tickPositions: [tickPosition],
                 tickColor: '#000000',
                 tickPosition: 'inside',
-                tickLength: 40,
-                tickWidth: 5,
+                tickLength: 35,
+                tickWidth: 3,
                 zIndex: 100,
             },
             plotOptions: {
@@ -110,14 +112,18 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
             }]
         };
 
-        function getSeries() {
+        function getCustomSeries() {
             let totalSerie = null;
             let actualSerie = null;
             let accountSerie = null;
-            if (records.length > 0 && records[0] && Object.keys(records[0]).length >= 3){
-                totalSerie = records[0][totalAttainment.columnName];
-                actualSerie = records[0][actualAmount.columnName];
-                accountSerie = records[0][accountName.columnName];
+            const currentSerie = userOptions.series[0].data[0];
+            if (currentSerie.record
+                && currentSerie.record[totalAttainment.columnName]
+                && currentSerie.record[actualAmount.columnName]
+                && currentSerie.record[accountName.columnName]) {
+                totalSerie = currentSerie.record[totalAttainment.columnName];
+                actualSerie = currentSerie.record[actualAmount.columnName];
+                accountSerie = currentSerie.record[accountName.columnName];
             }
             return [totalSerie, actualSerie, accountSerie];
         }
@@ -135,7 +141,7 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
             actualData.data = actual;
             const values = [totalData, actualData];
             const formattedValues = values.map(value => {
-                switch(value.formatData) {
+                switch (value.formatData) {
                     case '0.00':
                         return formatNumber(value.data, true, false, null);
                     case '0,000.00':
@@ -177,13 +183,13 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 formattedValue = currency + formattedValue;
             }
             return formattedValue.toString();
-        
+
         }
         function formatNumberWithDividend(value, dividendNumber, formatType, symbol) {
             const absValue = Math.abs(value / dividendNumber);
             const isNegative = value < 0;
             return `${isNegative ? '-' : ''}${numeral(absValue).format(FORMAT_TYPE[formatType])}${symbol}`;
-          }
+        }
 
         function getTickPositon() {
             if (calculatedAttainment > 100) {

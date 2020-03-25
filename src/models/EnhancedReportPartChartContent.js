@@ -1,4 +1,4 @@
-import {getClass} from 'IzendaSynergy';
+import { getClass } from 'IzendaSynergy';
 
 const ReportPartChartContent = getClass('ReportPartChartContent');
 
@@ -9,67 +9,67 @@ const hasElement = container => container && container.elements && container.ele
  * @param {Object} container The field container object
  */
 const hasAllFunctions = container => {
-		if (!hasElement(container)) {
-				return false;
-		}
+	if (!hasElement(container)) {
+		return false;
+	}
 
-		let hasFunction = true;
+	let hasFunction = true;
 
-		container
-				.elements
-				.forEach(elm => (hasFunction = hasFunction && elm.haveFunction));
+	container
+		.elements
+		.forEach(elm => (hasFunction = hasFunction && elm.haveFunction));
 
-		return hasFunction;
+	return hasFunction;
 };
 
 /**
  * Extend existing ReportPartChartContent model for additional custom charts
  */
 export default class EnhancedReportPartChartContent extends ReportPartChartContent {
-		constructor(reportPartContent) {
-				super(reportPartContent);
+	constructor(reportPartContent) {
+		super(reportPartContent);
 
-				this.addCustomContainer('totalAttainment');
-				this.addCustomContainer('actualAmount');
-				this.addCustomContainer('accountName');
-				//this.addCustomContainer('accountSequence');
-				
-				//Add ZValues field container for 3DScatter chart
-				this.addCustomContainer('ZValues');
+		this.addCustomContainer('totalAttainment');
+		this.addCustomContainer('actualAmount');
+		this.addCustomContainer('accountName');
+		//this.addCustomContainer('accountSequence');
 
-				//Add startRange, endRange field containers for D3 Timeline chart
-				this.addCustomContainer('startRange');
-				this.addCustomContainer('endRange');
+		//Add ZValues field container for 3DScatter chart
+		this.addCustomContainer('ZValues');
 
-				this.addCustomContainer('test1');
+		//Add startRange, endRange field containers for D3 Timeline chart
+		this.addCustomContainer('startRange');
+		this.addCustomContainer('endRange');
+
+		this.addCustomContainer('test1');
+	}
+
+	/**
+* Override this properties to ensure all required fields exist and configured properly
+*/
+	get isBeingBuild() {
+		switch (this.chartType) {
+			case 'Solid Gauge':
+				return hasAllFunctions(this['values']) && hasAllFunctions(this['actualAmount'])
+					&& hasAllFunctions(this['accountName']) && hasAllFunctions(this['labels']);
+			case '3DScatter':
+				return super.isBeingBuild && hasAllFunctions(this['ZValues']);
+			case 'Timeline':
+				return (hasElement(this['separators']) && hasAllFunctions(this['values']) && hasAllFunctions(this['startRange']) && hasAllFunctions(this['endRange']));
+			case 'CustomGauge':
+				return hasAllFunctions(this['test1']);
+			default:
+				return super.isBeingBuild;
 		}
+	}
 
-		/**
-   * Override this properties to ensure all required fields exist and configured properly
-   */
-		get isBeingBuild() {
-				switch (this.chartType) {
-						case 'AttainmentGauge':
-						return hasAllFunctions(this['totalAttainment']) && hasAllFunctions(this['actualAmount']) 
-							&& hasAllFunctions(this['accountName']) && hasAllFunctions(this['separators']);
-						case '3DScatter':
-								return super.isBeingBuild && hasAllFunctions(this['ZValues']);
-						case 'Timeline':
-								return (hasElement(this['separators']) && hasAllFunctions(this['values']) && hasAllFunctions(this['startRange']) && hasAllFunctions(this['endRange']));
-						case 'CustomGauge':
-							return hasAllFunctions(this['test1']);
-						default:
-								return super.isBeingBuild;
-				}
-		}
-
-		getDefaultFunctionFormat(container, dataType) {
-				return (super.getDefaultFunctionFormat(container, dataType) || {
-						FUNCTION: {
-								NAME: 'Group'
-						},
-						FORMAT: '',
-						ON_NULL_FUNCTION: 'error'
-				});
-		}
+	getDefaultFunctionFormat(container, dataType) {
+		return (super.getDefaultFunctionFormat(container, dataType) || {
+			FUNCTION: {
+				NAME: 'Group'
+			},
+			FORMAT: '',
+			ON_NULL_FUNCTION: 'error'
+		});
+	}
 }

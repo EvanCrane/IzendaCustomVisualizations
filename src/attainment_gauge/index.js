@@ -7,14 +7,14 @@ import {
     createFieldContainerSchema
 } from 'IzendaSynergy';
 
-extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'AttainmentGauge', null, {
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'Solid Gauge', null, {
     visualType: 'izendaSolidGauge',
     visualLabel: 'Attainment',
     optionsBuilder: AttainmentGaugeOptionsBuilder,
     fieldContainerSchema: [
-        createFieldContainerSchema('totalAttainment', 'Total Attainment', 'totalAttainment', null, 1),
+        createFieldContainerSchema('values', 'Total Attainment', 'values', null, 1),
         createFieldContainerSchema('actualAmount', 'Actual Amount', 'actualAmount', null, 1),
         createFieldContainerSchema('accountName', 'Account Name', 'accountName', null, 1),
-        createFieldContainerSchema('separators', 'Account Sequence', 'separators', null, 1)
+        createFieldContainerSchema('labels', 'Account Sequence', 'labels', null, 1)
 ]
 });
