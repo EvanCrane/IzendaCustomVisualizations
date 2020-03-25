@@ -32,7 +32,7 @@ export default class EnhancedReportPartChartContent extends ReportPartChartConte
 				this.addCustomContainer('totalAttainment');
 				this.addCustomContainer('actualAmount');
 				this.addCustomContainer('accountName');
-				this.addCustomContainer('accountSequence');
+				//this.addCustomContainer('accountSequence');
 				
 				//Add ZValues field container for 3DScatter chart
 				this.addCustomContainer('ZValues');
@@ -51,7 +51,7 @@ export default class EnhancedReportPartChartContent extends ReportPartChartConte
 				switch (this.chartType) {
 						case 'AttainmentGauge':
 						return hasAllFunctions(this['totalAttainment']) && hasAllFunctions(this['actualAmount']) 
-							&& hasAllFunctions(this['accountName']) && hasAllFunctions(this['accountSequence']);
+							&& hasAllFunctions(this['accountName']) && hasAllFunctions(this['separators']);
 						case '3DScatter':
 								return super.isBeingBuild && hasAllFunctions(this['ZValues']);
 						case 'Timeline':

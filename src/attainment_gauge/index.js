@@ -15,6 +15,6 @@ extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'AttainmentGauge', n
         createFieldContainerSchema('totalAttainment', 'Total Attainment', 'totalAttainment', null, 1),
         createFieldContainerSchema('actualAmount', 'Actual Amount', 'actualAmount', null, 1),
         createFieldContainerSchema('accountName', 'Account Name', 'accountName', null, 1),
-        createFieldContainerSchema('accountSequence', 'Account Sequence', 'accountSequence', null, 1)
+        createFieldContainerSchema('separators', 'Account Sequence', 'separators', null, 1)
 ]
 });

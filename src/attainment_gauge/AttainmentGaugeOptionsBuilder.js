@@ -3,26 +3,27 @@ import './styles.css';
 import { getClass, ReportPartUtils } from 'IzendaSynergy';
 
 const HighchartVizEngine = getClass('HighchartVizEngine');
-const highcharts = HighchartVizEngine.VisualizationLibrary;
+//const highcharts = HighchartVizEngine.VisualizationLibrary;
 
-const SolidGaugeOptionsBuilder = getClass('SolidGaugeOptionsBuilder');
+//const SolidGaugeOptionsBuilder = getClass('SolidGaugeOptionsBuilder');
 const HighchartOptionsBuilder = getClass('HighchartOptionsBuilder');
 export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuilder {
     constructor(...args) {
         super(...args);
     }
     buildOptionsByType(visualType, userOptions, dataParser) {
+        const records = dataParser['records'];
         const totalAttainment = dataParser.dataStructure['totalAttainment'][0];
         const actualAmount = dataParser.dataStructure['actualAmount'][0];
         const accountName = dataParser.dataStructure['accountName'][0];
-        const accountSequence = dataParser.dataStructure['accountSequence'][0];
 
-        let total = 100;
-        let actual = 175;
-        let account = 'ACCOUNT NAME';
+        const seriesConfig = userOptions.izendaSeriesConfig;
+        //const accountSequence = dataParser.dataStructure['accountSequence'][0];
+
+        let [total, actual, account] = getSeries();
         // Percentange Calculated
         let calculatedAttainment = calculateAttainment();
-
+        let [formattedTotal, formattedActual] = formatSeries();
         let tickPosition = getTickPositon();
 
         let chartConfigs = {
@@ -34,7 +35,7 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 enabled: false
             },
             title: {
-                text: total,
+                text: formattedTotal,
                 verticalAlign: 'top',
                 style: {
                     fontSize: '24px'
@@ -44,7 +45,7 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 enabled: true,
                 useHTML: true,
                 formatter: function () {
-                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + actual + '</table>';
+                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + formattedActual + '</table>';
                 }
                 //headerFormat: '<span><b>Account: Stone Cost - PHILADELPHIA</b> </span><br><table>',
                 //pointFormat: 'Actual: ' + actual,
@@ -83,15 +84,15 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 solidgauge: {
                     linecap: 'square',
                     stickyTracking: false,
-                    rounded: false
+                    rounded: false,
+                    radius: '100%',
+                    innerRadius: '75%'
                 }
             },
             series: [{
                 name: 'Account: ' + account,
                 data: [{
-                    radius: '100%',
-                    innerRadius: '75%',
-                    y: calculatedAttainment,
+                    y: calculatedAttainment
                 }],
                 dataLabels: {
                     enabled: true,
@@ -109,9 +110,80 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
             }]
         };
 
-        function calculateAttainment() {
-            return (actual / total) * 100;
+        function getSeries() {
+            let totalSerie = null;
+            let actualSerie = null;
+            let accountSerie = null;
+            if (records.length > 0 && records[0] && Object.keys(records[0]).length >= 3){
+                totalSerie = records[0][totalAttainment.columnName];
+                actualSerie = records[0][actualAmount.columnName];
+                accountSerie = records[0][accountName.columnName];
+            }
+            return [totalSerie, actualSerie, accountSerie];
         }
+
+        function calculateAttainment() {
+            return parseFloat(((actual / total) * 100).toFixed(2));
+        }
+
+        function formatSeries() {
+            const totalData = {};
+            const actualData = {};
+            totalData.formatData = seriesConfig[totalAttainment.fieldNameAlias].fieldFormatData;
+            actualData.formatData = seriesConfig[actualAmount.fieldNameAlias].fieldFormatData;
+            totalData.data = total;
+            actualData.data = actual;
+            const values = [totalData, actualData];
+            const formattedValues = values.map(value => {
+                switch(value.formatData) {
+                    case '0.00':
+                        return formatNumber(value.data, true, false, null);
+                    case '0,000.00':
+                        return formatNumber(value.data, true, true, null);
+                    case '0,000':
+                        return formatNumber(value.data, false, true, null);
+                    case '0000':
+                        return value.data;
+                    case '$0.00':
+                        return formatNumber(value.data, true, false, '$');
+                    case '$0,000.00':
+                        return formatNumber(value.data, true, true, '$');
+                    case '$0000':
+                        return formatNumber(value.data, false, false, '$');
+                    case '$0.00':
+                        return formatNumber(value.data, true, false, '$');
+                    case '1K':
+                        return formatNumberWithDividend(value.data, 1000, 'Abbreviation', 'K');
+                    case '1M':
+                        return formatNumberWithDividend(value.data, 1000000, 'Abbreviation', 'M');
+                    case '1B':
+                        return formatNumberWithDividend(value.data, 1000000000, 'Abbreviation', 'B');
+                    default:
+                        return value.data;
+                }
+            });
+            return formattedValues;
+        }
+
+        function formatNumber(value, hasDecimal, hasComma, currency) {
+            let formattedValue = value;
+            if (hasDecimal) {
+                formattedValue = parseFloat(formattedValue.toFixed(2));
+            }
+            if (hasComma) {
+                formattedValue = formattedValue.toLocaleString();
+            }
+            if (currency) {
+                formattedValue = currency + formattedValue;
+            }
+            return formattedValue.toString();
+        
+        }
+        function formatNumberWithDividend(value, dividendNumber, formatType, symbol) {
+            const absValue = Math.abs(value / dividendNumber);
+            const isNegative = value < 0;
+            return `${isNegative ? '-' : ''}${numeral(absValue).format(FORMAT_TYPE[formatType])}${symbol}`;
+          }
 
         function getTickPositon() {
             if (calculatedAttainment > 100) {
