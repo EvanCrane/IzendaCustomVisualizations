@@ -6,7 +6,7 @@ import {
     createFieldContainerSchema
 } from 'IzendaSynergy';
 
-extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'CustomGauge', null, {
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'CustomGauge', CHART_STYLES.SolidGauge, {
     visualType: 'izendaSolidGauge',
     visualLabel: 'Custom Gauge',
     optionsBuilder: CustomGaugeOptionsBuilder,

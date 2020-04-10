@@ -1,34 +1,41 @@
-import $ from 'jquery';
 import './styles.css';
+import $ from 'jquery';
+import { get, isNil, head, flow } from 'lodash/fp';
 import { getClass, ReportPartUtils } from 'IzendaSynergy';
-
-const HighchartVizEngine = getClass('HighchartVizEngine');
-//const highcharts = HighchartVizEngine.VisualizationLibrary;
-
-//const SolidGaugeOptionsBuilder = getClass('SolidGaugeOptionsBuilder');
-const HighchartOptionsBuilder = getClass('HighchartOptionsBuilder');
-export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuilder {
+const SolidGaugeOptionsBuilder = getClass('SolidGaugeOptionsBuilder');
+//const HighchartOptionsBuilder = getClass('HighchartOptionsBuilder');
+export default class AttainmentGaugeOptionsBuilder extends SolidGaugeOptionsBuilder {
     constructor(...args) {
         super(...args);
     }
+
     buildOptionsByType(visualType, userOptions, dataParser) {
-        const records = dataParser['records'];
+        const chartOptions = super.buildOptionsByType(visualType, userOptions, dataParser);
+        const izendaSeriesConfig = userOptions.izendaSeriesConfig || {};
+        const izendaOptions = userOptions.izendaOptions;
+        const valueData = get('[0].data[0].y', userOptions.series);
+        const serieName = izendaOptions.serieName;
+
         const sequence = dataParser.dataStructure['labels'][0];
-        const totalAttainment = dataParser.dataStructure['values'][0];
-        const actualAmount = dataParser.dataStructure['actualAmount'][0];
-        const accountName = dataParser.dataStructure['accountName'][0];
+        const actualAmount = dataParser.dataStructure['values'][0];
+        const separators = dataParser.dataStructure['values'][0];
+        const description = dataParser.dataStructure['accountDescription'][0];
+        const totalAmount = dataParser.dataStructure['totalBudget'][0];
 
-        const seriesConfig = userOptions.izendaSeriesConfig;
+        // Get record values for the current serie
+        let [total, actual, account] = this.getCustomSeries(userOptions, totalAmount, actualAmount, description);
+        // Get calculated percentage
+        let calculatedAttainment = this.calculateAttainment(actual, total);
 
-        //const accountSequence = dataParser.dataStructure['accountSequence'][0];
+        //let [formattedTotal, formattedActual] = formatSeries();
 
-        let [total, actual, account] = getCustomSeries();
-        // Percentange Calculated
-        let calculatedAttainment = calculateAttainment();
-        let [formattedTotal, formattedActual] = formatSeries();
-        let tickPosition = getTickPositon();
+        // Get the correct tick position
+        let tickPosition = this.getTickPosition(calculatedAttainment);
 
-        let chartConfigs = {
+        //let [formattedActual, formattedTotal] = getFormattedData();
+
+
+        return $.extend(true, chartOptions, {
             chart: {
                 type: 'solidgauge',
                 marginTop: 25
@@ -37,7 +44,8 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 enabled: false
             },
             title: {
-                text: formattedTotal,
+                text: getFormattedTitle(),
+                useHTML: true,
                 verticalAlign: 'top',
                 style: {
                     fontSize: '24px'
@@ -47,7 +55,7 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                 enabled: true,
                 useHTML: true,
                 formatter: function () {
-                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + formattedActual + '</table>';
+                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + getDataFormat(actual, false) + '</table>';
                 }
                 //headerFormat: '<span><b>Account: Stone Cost - PHILADELPHIA</b> </span><br><table>',
                 //pointFormat: 'Actual: ' + actual,
@@ -91,6 +99,7 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                     innerRadius: '75%'
                 }
             },
+
             series: [{
                 name: 'Account: ' + account,
                 data: [{
@@ -100,104 +109,93 @@ export default class AttainmentGaugeOptionsBuilder extends HighchartOptionsBuild
                     enabled: true,
                     className: 'highlight',
                     formatter: function () {
-                        return '<b>' + calculatedAttainment + '%</b>';
+                        return getFormattedDataLabel();
                     },
                     borderWidth: 0,
                     style: {
-                        fontSize: '30px',
-                        fontWeight: 'bold'
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        top: 0
                     },
-                    y: -20
+                    y: -30
                 }
             }]
-        };
+        });
 
-        function getCustomSeries() {
-            let totalSerie = null;
-            let actualSerie = null;
-            let accountSerie = null;
-            const currentSerie = userOptions.series[0].data[0];
-            if (currentSerie.record
-                && currentSerie.record[totalAttainment.columnName]
-                && currentSerie.record[actualAmount.columnName]
-                && currentSerie.record[accountName.columnName]) {
-                totalSerie = currentSerie.record[totalAttainment.columnName];
-                actualSerie = currentSerie.record[actualAmount.columnName];
-                accountSerie = currentSerie.record[accountName.columnName];
+
+        function getFormattedTitle() {
+            // first change header html content
+            let chartHeaderContent = userOptions.commonActions.chartContainer.parentElement.parentElement.previousSibling.firstElementChild;
+            if (!(chartHeaderContent.classList.contains('custom-header-text'))) {
+                chartHeaderContent.classList.add('custom-header-text');
             }
-            return [totalSerie, actualSerie, accountSerie];
-        }
-
-        function calculateAttainment() {
-            return parseFloat(((actual / total) * 100).toFixed(2));
-        }
-
-        function formatSeries() {
-            const totalData = {};
-            const actualData = {};
-            totalData.formatData = seriesConfig[totalAttainment.fieldNameAlias].fieldFormatData;
-            actualData.formatData = seriesConfig[actualAmount.fieldNameAlias].fieldFormatData;
-            totalData.data = total;
-            actualData.data = actual;
-            const values = [totalData, actualData];
-            const formattedValues = values.map(value => {
-                switch (value.formatData) {
-                    case '0.00':
-                        return formatNumber(value.data, true, false, null);
-                    case '0,000.00':
-                        return formatNumber(value.data, true, true, null);
-                    case '0,000':
-                        return formatNumber(value.data, false, true, null);
-                    case '0000':
-                        return value.data;
-                    case '$0.00':
-                        return formatNumber(value.data, true, false, '$');
-                    case '$0,000.00':
-                        return formatNumber(value.data, true, true, '$');
-                    case '$0000':
-                        return formatNumber(value.data, false, false, '$');
-                    case '$0.00':
-                        return formatNumber(value.data, true, false, '$');
-                    case '1K':
-                        return formatNumberWithDividend(value.data, 1000, 'Abbreviation', 'K');
-                    case '1M':
-                        return formatNumberWithDividend(value.data, 1000000, 'Abbreviation', 'M');
-                    case '1B':
-                        return formatNumberWithDividend(value.data, 1000000000, 'Abbreviation', 'B');
-                    default:
-                        return value.data;
-                }
-            });
-            return formattedValues;
-        }
-
-        function formatNumber(value, hasDecimal, hasComma, currency) {
-            let formattedValue = value;
-            if (hasDecimal) {
-                formattedValue = parseFloat(formattedValue.toFixed(2));
+            if (!(chartHeaderContent.textContent.includes(String(account)))) {
+                chartHeaderContent.textContent += ' ' + account;
             }
-            if (hasComma) {
-                formattedValue = formattedValue.toLocaleString();
-            }
-            if (currency) {
-                formattedValue = currency + formattedValue;
-            }
-            return formattedValue.toString();
-
-        }
-        function formatNumberWithDividend(value, dividendNumber, formatType, symbol) {
-            const absValue = Math.abs(value / dividendNumber);
-            const isNegative = value < 0;
-            return `${isNegative ? '-' : ''}${numeral(absValue).format(FORMAT_TYPE[formatType])}${symbol}`;
+            // then change the actual highcharts header
+            return '<div>' + getDataFormat(actual, false) + '</div>';
         }
 
-        function getTickPositon() {
-            if (calculatedAttainment > 100) {
-                return calculatedAttainment % 100;
-            }
-            return 0;
+        function getFormattedDataLabel() {
+            let body = '<div>' + calculatedAttainment + '%</div>';
+            let footer = '<div class="custom-footer">Of ' + getDataFormat(total, false) + '</div>';
+            return '<div class="custom-data-label">' + body + footer + '</div>';
         }
 
-        return chartConfigs;
+        function getDataFormat(value, isApplyAlternativeText) {
+            const record = flow(
+                head,
+                get('data'),
+                head,
+                get('record')
+            )(userOptions.series);
+            const element = flow(
+                head,
+                get('yAxisField')
+            )(userOptions.series);
+
+            const fieldValues = { value: value, originalValue: value };
+            const jsFormatString = get('reportPartElm.properties.dataFormattings.format.jsFormatString', element);
+            const jsFormatId = get('reportPartElm.properties.dataFormattings.format.formatId', element);
+            fieldValues.value = jsFormatString ? jsFormatService.format(jsFormatId, value) : value;
+
+            return dataParser.getFormatData(
+                fieldValues,
+                izendaSeriesConfig[serieName],
+                {
+                    record,
+                    element
+                },
+                isApplyAlternativeText
+            );
+        }
+
+    }
+
+    getCustomSeries(userOptions, totalAmount, actualAmount, description) {
+        let totalSerie = null;
+        let actualSerie = null;
+        let descriptionSerie = null;
+        const currentSerie = userOptions.series[0].data[0];
+        if (currentSerie.record
+            && currentSerie.record[totalAmount.columnName]
+            && currentSerie.record[actualAmount.columnName]
+            && currentSerie.record[description.columnName]) {
+            totalSerie = currentSerie.record[totalAmount.columnName];
+            actualSerie = currentSerie.record[actualAmount.columnName];
+            descriptionSerie = currentSerie.record[description.columnName];
+        }
+        return [totalSerie, actualSerie, descriptionSerie];
+    }
+
+    calculateAttainment(actual, total) {
+        return parseFloat(((actual / total) * 100).toFixed(2));
+    }
+
+    getTickPosition(calculatedAttainment) {
+        if (calculatedAttainment > 100) {
+            return calculatedAttainment % 100;
+        }
+        return 0;
     }
 }

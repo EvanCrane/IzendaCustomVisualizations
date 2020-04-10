@@ -1,4 +1,4 @@
-//Import the activity gauge options
+//Import the attainment gauge options
 import AttainmentGaugeOptionsBuilder from './AttainmentGaugeOptionsBuilder';
 import {
     REPORT_PART_TYPES,
@@ -7,14 +7,12 @@ import {
     createFieldContainerSchema
 } from 'IzendaSynergy';
 
-extendReportPartStyleConfiguration(REPORT_PART_TYPES.Chart, 'Solid Gauge', null, {
+extendReportPartStyleConfiguration(REPORT_PART_TYPES.Gauge, 'AttainmentGauge', CHART_STYLES.SolidGauge, {
     visualType: 'izendaSolidGauge',
     visualLabel: 'Attainment',
     optionsBuilder: AttainmentGaugeOptionsBuilder,
     fieldContainerSchema: [
-        createFieldContainerSchema('values', 'Total Attainment', 'values', null, 1),
-        createFieldContainerSchema('actualAmount', 'Actual Amount', 'actualAmount', null, 1),
-        createFieldContainerSchema('accountName', 'Account Name', 'accountName', null, 1),
-        createFieldContainerSchema('labels', 'Account Sequence', 'labels', null, 1)
+        createFieldContainerSchema('totalBudget', 'Total Budget', 'totalBudget', null, 1),
+        createFieldContainerSchema('accountDescription', 'Description', 'accountDescription', null, 1)
 ]
 });

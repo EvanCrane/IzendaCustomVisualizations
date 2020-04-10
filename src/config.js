@@ -1,5 +1,5 @@
 export default {
-		WebApiUrl : 'http://dev2.eastasia.cloudapp.azure.com:81/api/',
+		WebApiUrl : 'http://qa-sql.eastus.cloudapp.azure.com:81/api/',
 		BaseUrl : '/',
 		TimeOut : 3600,
 		Integration : false,
