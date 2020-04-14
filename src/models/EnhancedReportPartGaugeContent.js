@@ -26,17 +26,9 @@ const hasAllFunctions = container => {
 export default class EnhancedReportPartGauge extends ReportPartGaugeContent {
     constructor(reportPartContent) {
         super(reportPartContent);
-
-        //this.addCustomContainer('totalAttainment');
-        //this.addCustomContainer('actualAmount');
-        //this.addCustomContainer('accountName');
-        //this.addCustomContainer('accountSequence');
         this.addCustomContainer('totalBudget');
         this.addCustomContainer('accountDescription');
-
         this.addCustomContainer('test1');
-        
-
     }
 
     get isBeingBuild() {
@@ -47,8 +39,6 @@ export default class EnhancedReportPartGauge extends ReportPartGaugeContent {
                     && hasAllFunctions(this['accountName']) && hasAllFunctions(this['accountSequence']);
             */
            
-            case 'AttainmentGauge':
-                return super.isBeingBuild && hasAllFunctions(this['totalBudget']) && hasAllFunctions(this['accountDescription']);
             case 'AttainmentGauge':
                 return super.isBeingBuild && hasAllFunctions(this['totalBudget']) && hasAllFunctions(this['accountDescription']);
             case 'CustomGauge':

@@ -9,5 +9,28 @@
 <body>
   <div class="container" id="izenda-root"></div>
 </body>
+<script>
+  // Ensure this script is placed after Izenda UI library (izenda_ui.js as above)
+  (function () {
+
+    // Please note: the format label is case sensitive.
+    IzendaSynergy.addJsFormat("$0,000", function formatMoney(amount) {
+      try {
+        var decimalCount = 0, decimal = ".", thousands = ",";
+        decimalCount = Math.abs(decimalCount);
+        decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+
+        const negativeSign = amount < 0 ? "-" : "";
+
+        var i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+        var j = (i.length > 3) ? i.length % 3 : 0;
+
+        return negativeSign + "$" + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+      } catch (e) {
+        console.log(e);
+      }
+    });
+  })();
+</script>
 
 </html>
