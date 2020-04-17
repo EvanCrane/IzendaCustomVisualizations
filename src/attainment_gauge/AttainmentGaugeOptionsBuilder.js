@@ -49,7 +49,7 @@ export default class AttainmentGaugeOptionsBuilder extends SolidGaugeOptionsBuil
                 enabled: true,
                 useHTML: true,
                 formatter: function () {
-                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + getDataFormat(actual, false) + '</table>';
+                    return '<span><b>Account: ' + account + '</b></span><br><table>Actual: ' + getDataFormat(actual, false) + ' ' + izendaOptions.dataUnit +'</table>';
                 }
             },
             pane: {
@@ -121,10 +121,11 @@ export default class AttainmentGaugeOptionsBuilder extends SolidGaugeOptionsBuil
                 chartHeaderContent.classList.add('custom-header-text');
             }
             if (!(chartHeaderContent.textContent.includes(String(account)))) {
-                chartHeaderContent.textContent += ' ' + account;
+                chartHeaderContent.textContent = account;
             }
             // then change the actual highcharts header
-            return '<div>' + getDataFormat(actual, false, actualAmount) + '</div>';
+            
+            return '<div>' + getDataFormat(actual, false, actualAmount) + ' ' + izendaOptions.dataUnit + '</div>';
         }
 
         function getFormattedDataLabel() {
@@ -158,7 +159,15 @@ export default class AttainmentGaugeOptionsBuilder extends SolidGaugeOptionsBuil
         }
 
         function getTickLength() {
-            let chartHeight = userOptions.commonActions.chartContainer.offsetHeight;
+            let chartHeight, tickLength = null; 
+            // Attempt to get the actual height of the rendered SVGs. Will need jquery for this.
+            if ($('.highcharts-pane-group')[0] !== undefined) {
+                chartHeight = $('.highcharts-pane-group')[0].getBoundingClientRect().height;
+                tickLength = (chartHeight/100) * 10 + 5;
+            } else {
+                chartHeight = userOptions.commonActions.chartContainer.offsetHeight;
+                tickLength = Math.floor(chartHeight/100) * 10 + 6;
+            }
             /*
             if (chartHeight <= 100) {
                 return 3;
@@ -174,7 +183,7 @@ export default class AttainmentGaugeOptionsBuilder extends SolidGaugeOptionsBuil
             return 35;
             */
            // returns relatively accurate sizing for tick mark based on above if else block
-           return Math.floor(chartHeight/100) * 10 + 6;
+           return tickLength;
         }
 
         function getGaugeColor() {

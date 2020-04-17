@@ -29,19 +29,6 @@ export default class EnhancedReportPartChartContent extends ReportPartChartConte
 	constructor(reportPartContent) {
 		super(reportPartContent);
 
-		this.addCustomContainer('totalAttainment');
-		this.addCustomContainer('actualAmount');
-		this.addCustomContainer('accountName');
-		//this.addCustomContainer('accountSequence');
-
-		//Add ZValues field container for 3DScatter chart
-		this.addCustomContainer('ZValues');
-
-		//Add startRange, endRange field containers for D3 Timeline chart
-		this.addCustomContainer('startRange');
-		this.addCustomContainer('endRange');
-
-		this.addCustomContainer('test1');
 	}
 
 	/**
@@ -49,15 +36,6 @@ export default class EnhancedReportPartChartContent extends ReportPartChartConte
 */
 	get isBeingBuild() {
 		switch (this.chartType) {
-			case 'Solid Gauge':
-				return hasAllFunctions(this['values']) && hasAllFunctions(this['actualAmount'])
-					&& hasAllFunctions(this['accountName']) && hasAllFunctions(this['labels']);
-			case '3DScatter':
-				return super.isBeingBuild && hasAllFunctions(this['ZValues']);
-			case 'Timeline':
-				return (hasElement(this['separators']) && hasAllFunctions(this['values']) && hasAllFunctions(this['startRange']) && hasAllFunctions(this['endRange']));
-			case 'CustomGauge':
-				return hasAllFunctions(this['test1']);
 			default:
 				return super.isBeingBuild;
 		}

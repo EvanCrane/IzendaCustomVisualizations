@@ -28,21 +28,12 @@ export default class EnhancedReportPartGauge extends ReportPartGaugeContent {
         super(reportPartContent);
         this.addCustomContainer('totalBudget');
         this.addCustomContainer('accountDescription');
-        this.addCustomContainer('test1');
     }
 
     get isBeingBuild() {
         switch (this.chartType) {
-            /*
-            case 'AttainmentGauge':
-                return hasAllFunctions(this['totalAttainment']) && hasAllFunctions(this['actualAmount']) 
-                    && hasAllFunctions(this['accountName']) && hasAllFunctions(this['accountSequence']);
-            */
-           
             case 'AttainmentGauge':
                 return super.isBeingBuild && hasAllFunctions(this['totalBudget']) && hasAllFunctions(this['accountDescription']);
-            case 'CustomGauge':
-                return super.isBeingBuild && hasAllFunctions(this['test1']);
             default:
                 return super.isBeingBuild;
         }
